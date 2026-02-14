@@ -68,15 +68,20 @@ app.use("/api/ops-logs", opsLogRoutes);
 //   res.status(200).json({ status: "OK", message: "Server is running" });
 // });
 
-// Serve static frontend
-app.use(express.static(path.join(__dirname, "client/dist")));
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
 
-// SPA fallback (Express 5 compatible)
-app.use((req, res, next) => {
-  if (req.method !== "GET") return next();
+  app.use("/uploads", express.static("/var/data/uploads"));
 
-  res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
-});
+  // Serve Vite build
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  // SPA fallback
+  app.use((req, res, next) => {
+    if (req.method !== "GET") return next();
+    res.sendFile(path.resolve(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 
 // Catch 404 and forward to error handler
