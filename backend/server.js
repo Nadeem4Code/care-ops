@@ -44,19 +44,7 @@ app.use(
     credentials: true,
   }),
 );
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "blob:"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "blob:"],
-        connectSrc: ["'self'", "https://care-ops.onrender.com"],
-      },
-    },
-  }),
-);
+
 
 app.use(morgan("dev"));
 
