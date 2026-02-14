@@ -4,10 +4,16 @@ import { logApiError } from "../lib/opsLogger";
 
 const AuthContext = createContext();
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-});
+const normalizeApiBaseUrl = (raw) => {
+  const fallback = "http://localhost:5000/api";
+  if (!raw || !raw.trim()) return fallback;
+  const cleaned = raw.trim().replace(/\/+$/, "");
+  return cleaned.endsWith("/api") ? cleaned : `${cleaned}/api`;
+};
 
+const API = axios.create({
+  baseURL: normalizeApiBaseUrl(import.meta.env.VITE_API_URL),
+});
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -165,3 +171,5 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => useContext(AuthContext);
 
 export default API;
+
+
