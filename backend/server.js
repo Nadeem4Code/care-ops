@@ -24,12 +24,11 @@ import googleRoutes from "./routes/google.js";
 import opsLogRoutes from "./routes/opsLog.js";
 import { startAutomationScheduler } from "./services/automationService.js";
 
-
-
 // Load env vars from project root .env regardless of current working directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 
 // Connect to database
 connectDB();
@@ -67,19 +66,25 @@ app.use("/api/ops-logs", opsLogRoutes);
 // app.get("/health", (req, res) => {
 //   res.status(200).json({ status: "OK", message: "Server is running" });
 // });
-
-if (process.env.NODE_ENV === "production") {
-  const __dirname = path.resolve();
-
-  app.use("/uploads", express.static("/var/data/uploads"));
+/* ================= PRODUCTION ================= */
+if (process.env.NODE_ENV === 'production') {
+  // Serve uploaded files (Render persistent disk)
+  app.use('/uploads', express.static('/var/data/uploads'));
 
   // Serve Vite build
-  app.use(express.static(path.join(__dirname, "../client/dist")));
+  app.use(express.static(path.join(__dirname, '../client/dist')));
 
-  // SPA fallback
+  // Express 5 SPA fallback (NO "*" route)
   app.use((req, res, next) => {
-    if (req.method !== "GET") return next();
-    res.sendFile(path.resolve(__dirname, "../client", "dist", "index.html"));
+    if (req.method !== 'GET') return next();
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+} else {
+  // Local uploads folder
+  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+  app.get('/', (req, res) => {
+    res.send('API is running...');
   });
 }
 
