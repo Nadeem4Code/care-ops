@@ -1,0 +1,9 @@
+# 1) Check status
+git status
+
+# 2) Create .gitignore first (important for secrets)
+# make sure these are ignored:
+.env
+node_modules/
+dist/
+build/
