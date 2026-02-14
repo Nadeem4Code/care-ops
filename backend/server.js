@@ -68,21 +68,18 @@ app.use("/api/ops-logs", opsLogRoutes);
 //   res.status(200).json({ status: "OK", message: "Server is running" });
 // });
 
-
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
-  app.use("/uploads", express.static("/var/data/uploads"));
-  app.use(express.static(path.join(__dirname, "/frontend/build")));
 
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html")),
+  app.use("/uploads", express.static("/var/data/uploads"));
+
+  // Serve Vite build
+  app.use(express.static(path.join(__dirname, "client/dist")));
+
+  // SPA fallback route (FIXED — no "*")
+  app.get("/*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html")),
   );
-} else {
-  const __dirname = path.resolve();
-  app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-  app.get("/", (req, res) => {
-    res.send("API is running....");
-  });
 }
 
 // Catch 404 and forward to error handler
