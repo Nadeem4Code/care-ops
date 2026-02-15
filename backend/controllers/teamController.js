@@ -5,6 +5,12 @@ import emailService from "../services/emailService.js";
 import jwt from "jsonwebtoken";
 import { getFrontendUrl } from "../utils/frontendUrl.js";
 
+const getRequestFrontendContext = (req) => ({
+  requestOrigin: req.get("origin"),
+  requestProtocol: req.get("x-forwarded-proto") || req.protocol,
+  requestHost: req.get("x-forwarded-host") || req.get("host"),
+});
+
 const validateInvitationState = async (invitation) => {
   if (!invitation) {
     return { valid: false, message: "Invitation not found", statusCode: 404 };
@@ -118,7 +124,8 @@ export const inviteTeamMember = async (req, res) => {
     });
 
     // Send invitation email
-    const inviteLink = `${getFrontendUrl()}/accept-invitation/${invitation.token}`;
+    const frontendUrl = getFrontendUrl(getRequestFrontendContext(req));
+    const inviteLink = `${frontendUrl}/accept-invitation/${invitation.token}`;
 
     await emailService.sendEmail({
       to: email,
@@ -578,7 +585,8 @@ export const resendInvitation = async (req, res) => {
     await invitation.save();
 
     // Resend email
-    const inviteLink = `${getFrontendUrl()}/accept-invitation/${invitation.token}`;
+    const frontendUrl = getFrontendUrl(getRequestFrontendContext(req));
+    const inviteLink = `${frontendUrl}/accept-invitation/${invitation.token}`;
 
     await emailService.sendEmail({
       to: invitation.email,
