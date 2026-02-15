@@ -7,6 +7,7 @@ import Workspace from "../models/Workspace.js";
 import emailService from "./emailService.js";
 import { hasActiveIntegration } from "./integrationGuard.js";
 import { logIntegrationFailure, logOpsEvent } from "./opsLogService.js";
+import { getFrontendUrl } from "../utils/frontendUrl.js";
 
 let schedulerHandle = null;
 let runInProgress = false;
@@ -193,7 +194,7 @@ const processFormReminders = async () => {
       const paused = await shouldSkipAutomation(workspace._id, contact._id);
       if (paused) continue;
 
-      const formLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/forms/${submission._id}`;
+      const formLink = `${getFrontendUrl()}/forms/${submission._id}`;
 
       try {
         await emailService.sendEmail({
@@ -267,4 +268,3 @@ export const startAutomationScheduler = () => {
     console.error("Initial automation cycle failed:", error.message);
   });
 };
-

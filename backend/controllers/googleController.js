@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import Workspace from "../models/Workspace.js";
 import Integration from "../models/Integration.js";
 import { exchangeCodeForTokens, getGoogleAuthUrl } from "../services/googleCalendarService.js";
+import { getFrontendUrl } from "../utils/frontendUrl.js";
 
 const buildStateToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10m" });
@@ -34,7 +35,7 @@ export const startGoogleAuth = async (req, res) => {
 export const handleGoogleCallback = async (req, res) => {
   try {
     const { code, state } = req.query;
-    const frontEndUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontEndUrl = getFrontendUrl();
 
     if (!code || !state) {
       return res.redirect(`${frontEndUrl}/dashboard/calendar?connected=0`);
@@ -91,7 +92,7 @@ export const handleGoogleCallback = async (req, res) => {
 
     res.redirect(`${frontEndUrl}/dashboard/calendar?connected=1`);
   } catch (error) {
-    const frontEndUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontEndUrl = getFrontendUrl();
     res.redirect(`${frontEndUrl}/dashboard/calendar?connected=0`);
   }
 };

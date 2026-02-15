@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Workspace from "../models/Workspace.js";
 import emailService from "../services/emailService.js";
 import jwt from "jsonwebtoken";
+import { getFrontendUrl } from "../utils/frontendUrl.js";
 
 const validateInvitationState = async (invitation) => {
   if (!invitation) {
@@ -117,7 +118,7 @@ export const inviteTeamMember = async (req, res) => {
     });
 
     // Send invitation email
-    const inviteLink = `${process.env.FRONTEND_URL}/accept-invitation/${invitation.token}`;
+    const inviteLink = `${getFrontendUrl()}/accept-invitation/${invitation.token}`;
 
     await emailService.sendEmail({
       to: email,
@@ -577,7 +578,7 @@ export const resendInvitation = async (req, res) => {
     await invitation.save();
 
     // Resend email
-    const inviteLink = `${process.env.FRONTEND_URL}/accept-invitation/${invitation.token}`;
+    const inviteLink = `${getFrontendUrl()}/accept-invitation/${invitation.token}`;
 
     await emailService.sendEmail({
       to: invitation.email,

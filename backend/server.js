@@ -23,6 +23,7 @@ import dashboardRoutes from "./routes/dashboard.js";
 import googleRoutes from "./routes/google.js";
 import opsLogRoutes from "./routes/opsLog.js";
 import { startAutomationScheduler } from "./services/automationService.js";
+import { getFrontendUrl } from "./utils/frontendUrl.js";
 
 // Load env vars from project root .env regardless of current working directory
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +41,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: getFrontendUrl(),
     credentials: true,
   }),
 );

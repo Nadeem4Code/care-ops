@@ -13,6 +13,7 @@ import emailService from "../services/emailService.js";
 import { createBookingEvent } from "../services/googleCalendarService.js";
 import { hasActiveIntegration } from "../services/integrationGuard.js";
 import { logIntegrationFailure } from "../services/opsLogService.js";
+import { getFrontendUrl } from "../utils/frontendUrl.js";
 import mongoose from "mongoose";
 
 // Helper function to check if slot is available
@@ -149,7 +150,7 @@ const createPostBookingForms = async (workspace, booking, serviceType, contact) 
     });
     submissions.push(submission);
 
-    const formLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/forms/${submission._id}`;
+    const formLink = `${getFrontendUrl()}/forms/${submission._id}`;
     const canSendForms = await hasActiveIntegration(workspace._id, "email");
     if (canSendForms) {
       try {
